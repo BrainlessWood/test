@@ -131,7 +131,7 @@ class BookRepository(
                 pages = renderer.pageCount
                 renderer.close()
                 pfd.close()
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("BookRepository", "Failed to open PDF and get page count: ${e.message}")
             }
 
@@ -141,7 +141,7 @@ class BookRepository(
                 totalPages = pages,
                 downloadProgress = 1.0f
             ))
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e("BookRepository", "Exception during download: ${e.message}")
             bookDao.updateBook(book.copy(downloadProgress = 0f))
         }

@@ -64,7 +64,7 @@ class DriveViewModel(application: Application) : AndroidViewModel(application) {
                         file.delete()
                     }
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("DriveViewModel", "Failed to clean up temp files: ${e.message}")
             }
         }
@@ -198,7 +198,7 @@ class DriveViewModel(application: Application) : AndroidViewModel(application) {
                     pages = renderer.pageCount
                     renderer.close()
                     pfd.close()
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     Log.e("DriveViewModel", "Temp page count extraction failed: ${e.message}")
                 }
 
@@ -219,7 +219,7 @@ class DriveViewModel(application: Application) : AndroidViewModel(application) {
 
                 streamingProgress.value = null
                 onComplete(driveFile.id)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("DriveViewModel", "Error streaming online PDF file: ${e.message}")
                 streamingProgress.value = null
             }

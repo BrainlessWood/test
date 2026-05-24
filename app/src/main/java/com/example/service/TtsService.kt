@@ -141,7 +141,15 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
         _isPlaying.value = true
 
         try {
-            startForeground(NOTIFICATION_ID, buildNotification(title, page, true))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification(title, page, true),
+                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, buildNotification(title, page, true))
+            }
         } catch (e: Throwable) {
             Log.e("TtsService", "Failed to start foreground service: ${e.message}")
         }

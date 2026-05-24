@@ -1022,7 +1022,7 @@ suspend fun downloadSamplePdf(
     context: Context,
     onProgress: (Float) -> Unit,
     onComplete: (File) -> Unit,
-    onError: (Exception) -> Unit
+    onError: (Throwable) -> Unit
 ) = withContext(Dispatchers.IO) {
     try {
         val url = URL("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
@@ -1055,7 +1055,7 @@ suspend fun downloadSamplePdf(
         withContext(Dispatchers.Main) {
             onComplete(outputFile)
         }
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
         withContext(Dispatchers.Main) {
             onError(e)
         }

@@ -143,11 +143,14 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    private var renderJob: kotlinx.coroutines.Job? = null
+
     fun loadAndRenderPage(pageIndex: Int) {
         _isLoadingPage.value = true
         // Reset TTS text state of the new page
         _pageSentences.value = emptyList()
-        viewModelScope.launch {
+        renderJob?.cancel()
+        renderJob = viewModelScope.launch {
             val bitmap = renderPdfPage(pageIndex)
             _pageBitmap.value = bitmap
             _isLoadingPage.value = false
@@ -168,8 +171,19 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
                 return@withContext null
             }
             val page = renderer.openPage(pageIndex)
-            val width = page.width * 2 // Render with double density for visual clarity
-            val height = page.height * 2
+            
+            // Limit page layout rendering dimensions to ensure we do not exceed memory limitations
+            var width = page.width * 2
+            var height = page.height * 2
+            val maxDimension = 2048
+            if (width > maxDimension || height > maxDimension) {
+                val scale = maxDimension.toFloat() / maxOf(width, height)
+                width = (width * scale).toInt()
+                height = (height * scale).toInt()
+            }
+            if (width <= 0) width = 1
+            if (height <= 0) height = 1
+
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             
             val canvas = android.graphics.Canvas(bitmap)
@@ -180,7 +194,7 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
             renderer.close()
             pfd.close()
             bitmap
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e("ReaderViewModel", "Native PdfRenderer rendering failed: ${e.message}")
             null
         }
@@ -246,7 +260,7 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
             val text = stripper.getText(document) ?: ""
             document.close()
             text
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e("ReaderViewModel", "Failed to extract text using PDFBox: ${e.message}")
             ""
         }

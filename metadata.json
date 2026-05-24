@@ -1,0 +1,6 @@
+{
+  "name": "Drive Reader",
+  "description": "A fully offline & online hybrid PDF reader with Google Drive integration, offline speech rate controller, Turkish language pack validator, and background Text-To-Speech (TTS) playback.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
